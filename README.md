@@ -12,10 +12,10 @@ A barebones and minimal implementation of a Create-Read API connected to a datab
 
 ## Schemas
 
-```json
+```ron
 User {
-    "name": "",  // string
-    "age": 0,    // integer
+    name: "",  // string
+    age: 0,    // integer
 }
 ```
 
