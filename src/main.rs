@@ -8,7 +8,7 @@ use anyhow::{Context, Result};
 use axum::{
     extract::{Path, State},
     http::StatusCode,
-    routing::get,
+    routing::{get, post},
     Json, Router,
 };
 use dotenv::dotenv;
@@ -16,7 +16,7 @@ use sqlx::{postgres::PgPoolOptions, PgPool};
 
 /// A basic "*hello*" GET endpoint.
 async fn index() -> &'static str {
-    "Hello, RustWithData!"
+    "Hello, RustWithData! Please use the /users endpoint for more interactibility."
 }
 
 /// A basic GET endpoint connected to the Users database.
@@ -35,8 +35,26 @@ async fn get_user(
     .map_err(errors::internal_error)
 }
 
+/// A basic POST endpoint connected to the Users database.
+async fn add_user(
+    State(pool): State<PgPool>,
+    Json(userdata): Json<User>,
+) -> Result<Json<User>, (StatusCode, String)> {
+    sqlx::query_as!(
+        User,
+        "INSERT INTO users(name, age) VALUES ($1, $2) RETURNING name, age",
+        userdata.name,
+        userdata.age
+    )
+    .fetch_one(&pool)
+    .await
+    .map(|user| Json(user))
+    .map_err(errors::internal_error)
+}
+
 #[tokio::main]
 async fn main() -> Result<()> {
+    // does not trigger when ran inside the container; uses Dockerfile ENV
     dotenv().ok();
     // enable tracing by default
     tracing_subscriber::fmt()
@@ -54,6 +72,7 @@ async fn main() -> Result<()> {
 
     let app = Router::new()
         .route("/", get(index))
+        .route("/users", post(add_user))
         .route("/users/:username", get(get_user))
         .with_state(pool);
 
