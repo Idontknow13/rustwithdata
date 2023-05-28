@@ -24,15 +24,12 @@ async fn get_user(
     Path(username): Path<String>,
     State(pool): State<PgPool>,
 ) -> Result<Json<User>, (StatusCode, String)> {
-    sqlx::query_as!(
-        User,
-        "SELECT name, age FROM users WHERE name = $1",
-        username
-    )
-    .fetch_one(&pool)
-    .await
-    .map(|user| Json(user))
-    .map_err(errors::internal_error)
+    sqlx::query_as::<_, User>("SELECT name, age FROM users WHERE name = $1")
+        .bind(username)
+        .fetch_one(&pool)
+        .await
+        .map(|user| Json(user))
+        .map_err(errors::internal_error)
 }
 
 /// A basic POST endpoint connected to the Users database.
@@ -40,21 +37,18 @@ async fn add_user(
     State(pool): State<PgPool>,
     Json(userdata): Json<User>,
 ) -> Result<Json<User>, (StatusCode, String)> {
-    sqlx::query_as!(
-        User,
-        "INSERT INTO users(name, age) VALUES ($1, $2) RETURNING name, age",
-        userdata.name,
-        userdata.age
-    )
-    .fetch_one(&pool)
-    .await
-    .map(|user| Json(user))
-    .map_err(errors::internal_error)
+    sqlx::query_as::<_, User>("INSERT INTO users(name, age) VALUES ($1, $2) RETURNING name, age")
+        .bind(userdata.name)
+        .bind(userdata.age)
+        .fetch_one(&pool)
+        .await
+        .map(|user| Json(user))
+        .map_err(errors::internal_error)
 }
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    // does not trigger when ran inside the container; uses Dockerfile ENV
+    // does not trigger when ran inside the container; uses docker-compose ENV
     dotenv().ok();
     // enable tracing by default
     tracing_subscriber::fmt()

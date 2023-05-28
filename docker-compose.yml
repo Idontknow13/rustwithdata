@@ -1,0 +1,22 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=usersdb
+    volumes:
+      - ./initdb:/docker-entrypoint-initdb.d
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      # adjust the username, password, url, and db_name as you see fit
+      - DATABASE_URL=postgres://admin:password@db:5432/usersdb
