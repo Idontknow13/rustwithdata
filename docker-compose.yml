@@ -3,6 +3,7 @@ services:
   db:
     image: postgres
     environment:
+      # adjust accordingly as you see fit
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=usersdb

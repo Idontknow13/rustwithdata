@@ -1,3 +1,10 @@
+//! # Rust with Data
+//!
+//! A barebones and minimal implementation of a Create-Read
+//! API connected to a database through another container
+//! instance.
+//!
+
 mod errors;
 mod schema;
 use schema::User;
