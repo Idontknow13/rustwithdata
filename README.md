@@ -7,8 +7,8 @@ A barebones and minimal implementation of a Create-Read API connected to a datab
 ## Endpoints
 
 - `/` : a basic "*hello*" GET endpoint.
-- `/names/{name}`: a basic GET endpoint. See schema *User*.
-- `/names` : a basic POST endpoint. See schema *User*.
+- `/users/{name}`: a basic GET endpoint. See schema *User*.
+- `/users` : a basic POST endpoint. See schema *User*.
 
 ## Schemas
 
