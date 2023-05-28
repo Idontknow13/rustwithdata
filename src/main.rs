@@ -1,3 +1,5 @@
+mod schema;
+
 use anyhow::{Context, Result};
 use axum::{routing::get, Router};
 
